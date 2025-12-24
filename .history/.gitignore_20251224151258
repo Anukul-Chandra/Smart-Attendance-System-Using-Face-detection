@@ -1,0 +1,13 @@
+# Google credentials
+credentials.json
+
+# Virtual environments
+venv/
+sas/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# macOS system files
+.DS_Store
