@@ -18,6 +18,8 @@ This project solves the problem using **computer vision and machine learning** t
 - 🎥 Provide a smooth user experience with automatic camera control  
 
 ---
+## Google sheets Attendance Link : 
+https://docs.google.com/spreadsheets/d/1U7S1Uq6eiDxb5mwLtkE8QCgwv6isSTLoM6atn59JTqk/edit?gid=0#gid=0
 
 ## 🧠 System Workflow
 1. 👤 User enrollment with personal details and face images  
