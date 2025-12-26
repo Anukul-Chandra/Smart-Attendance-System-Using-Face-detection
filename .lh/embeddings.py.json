@@ -1,0 +1,18 @@
+{
+    "sourceFile": "embeddings.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1766774444990,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1766774444990,
+            "name": "Commit-0",
+            "content": "# import os\n# import pickle\n# from deepface import DeepFace\n\n# FACE_DB = \"face_db\"\n# EMBEDDINGS_DIR = \"embeddings\"\n\n# os.makedirs(EMBEDDINGS_DIR, exist_ok=True)\n\n# print(\"🔹 Generating face embeddings using DeepFace...\")\n\n# for user in os.listdir(FACE_DB):\n#     user_path = os.path.join(FACE_DB, user)\n\n#     if not os.path.isdir(user_path):\n#         continue\n\n#     embeddings = []\n\n#     for img in os.listdir(user_path):\n#         img_path = os.path.join(user_path, img)\n\n#         try:\n#             result = DeepFace.represent(\n#                 img_path=img_path,\n#                 model_name=\"Facenet\",\n#                 enforce_detection=True\n#             )\n#             embeddings.append(result[0][\"embedding\"])\n#         except Exception as e:\n#             print(f\"⚠️ Skipped {img_path}: {e}\")\n\n#     if embeddings:\n#         with open(os.path.join(EMBEDDINGS_DIR, f\"{user}.pkl\"), \"wb\") as f:\n#             pickle.dump(embeddings, f)\n#         print(f\"✅ Saved embeddings for {user}\")\n#     else:\n#         print(f\"❌ No embeddings for {user}\")\n\n# print(\"🎉 Embedding generation completed!\")\n\nimport os\nimport cv2\nimport pickle\nimport numpy as np\nfrom deepface import DeepFace\n\n# ---------------- CONFIG ----------------\nFACE_DB_DIR = \"face_db\"        # enrolled images\nEMBEDDINGS_DIR = \"embeddings\"  # output embeddings\n\nMODEL_NAME = \"Facenet\"\nDETECTOR = \"retinaface\"\n\nos.makedirs(EMBEDDINGS_DIR, exist_ok=True)\n\n# ---------------- PROCESS EACH USER ----------------\nfor person_name in os.listdir(FACE_DB_DIR):\n    person_path = os.path.join(FACE_DB_DIR, person_name)\n\n    if not os.path.isdir(person_path):\n        continue\n\n    print(f\"\\n🔄 Processing user: {person_name}\")\n\n    person_embeddings = []\n\n    for img_name in os.listdir(person_path):\n        img_path = os.path.join(person_path, img_name)\n\n        if not img_name.lower().endswith((\".jpg\", \".png\", \".jpeg\")):\n            continue\n\n        try:\n            # Generate embedding using SAME pipeline as recognition\n            reps = DeepFace.represent(\n                img_path=img_path,\n                model_name=MODEL_NAME,\n                detector_backend=DETECTOR,\n                enforce_detection=True\n            )\n\n            embedding = np.array(reps[0][\"embedding\"])\n            person_embeddings.append(embedding)\n\n            print(f\"  ✅ Embedded: {img_name}\")\n\n        except Exception as e:\n            print(f\"  ❌ Skipped {img_name}: {e}\")\n\n    # ---------------- SAVE EMBEDDINGS ----------------\n    if len(person_embeddings) == 0:\n        print(f\"⚠️ No valid face found for {person_name}, skipping.\")\n        continue\n\n    save_path = os.path.join(EMBEDDINGS_DIR, f\"{person_name}.pkl\")\n    with open(save_path, \"wb\") as f:\n        pickle.dump(person_embeddings, f)\n\n    print(f\"💾 Saved {len(person_embeddings)} embeddings → {save_path}\")\n\nprint(\"\\n🎉 All embeddings generated successfully!\")\n"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "sourceFile": "face_utils.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1766770337829,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766770518942,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,8 @@\n import pickle\n import numpy as np\n+import os\n+\n from deepface import DeepFace\n \n EMBEDDINGS_DIR = \"embeddings\"\n THRESHOLD = 10\n"
+                },
+                {
+                    "date": 1766774507181,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,40 @@\n+import pickle\n+import numpy as np\n+import os\n+\n+from deepface import DeepFace\n+\n+EMBEDDINGS_DIR = \"embeddings\"\n+THRESHOLD = 10\n+\n+# Load embeddings once\n+db_embeddings = {}\n+\n+for file in os.listdir(EMBEDDINGS_DIR):\n+    if file.endswith(\".pkl\"):\n+        name = file.replace(\".pkl\", \"\")\n+        with open(f\"{EMBEDDINGS_DIR}/{file}\", \"rb\") as f:\n+            db_embeddings[name] = pickle.load(f)\n+\n+def recognize_face(image_path):\n+    rep = DeepFace.represent(\n+        img_path=image_path,\n+        model_name=\"Facenet\",\n+        enforce_detection=False\n+    )\n+\n+    live_embedding = np.array(rep[0][\"embedding\"])\n+\n+    name_found = \"Unknown\"\n+    min_dist = float(\"inf\")\n+\n+    for name, embeddings in db_embeddings.items():\n+        for emb in embeddings:\n+            dist = np.linalg.norm(live_embedding - np.array(emb))\n+            if dist < min_dist:\n+                min_dist = dist\n+                name_found = name\n+\n+    if min_dist < THRESHOLD:\n+        return name_found\n+    return \"Unknown\"\n"
+                }
+            ],
+            "date": 1766770337829,
+            "name": "Commit-0",
+            "content": "import pickle\nimport numpy as np\nfrom deepface import DeepFace\n\nEMBEDDINGS_DIR = \"embeddings\"\nTHRESHOLD = 10\n\n# Load embeddings once\ndb_embeddings = {}\n\nfor file in os.listdir(EMBEDDINGS_DIR):\n    if file.endswith(\".pkl\"):\n        name = file.replace(\".pkl\", \"\")\n        with open(f\"{EMBEDDINGS_DIR}/{file}\", \"rb\") as f:\n            db_embeddings[name] = pickle.load(f)\n\ndef recognize_face(image_path):\n    rep = DeepFace.represent(\n        img_path=image_path,\n        model_name=\"Facenet\",\n        enforce_detection=False\n    )\n\n    live_embedding = np.array(rep[0][\"embedding\"])\n\n    name_found = \"Unknown\"\n    min_dist = float(\"inf\")\n\n    for name, embeddings in db_embeddings.items():\n        for emb in embeddings:\n            dist = np.linalg.norm(live_embedding - np.array(emb))\n            if dist < min_dist:\n                min_dist = dist\n                name_found = name\n\n    if min_dist < THRESHOLD:\n        return name_found\n    return \"Unknown\"\n"
+        }
+    ]
+}
